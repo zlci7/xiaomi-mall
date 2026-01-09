@@ -1,0 +1,17 @@
+server:
+  port: :3000
+  mode: debug # release
+
+database:
+  mysql: "root:1234@tcp(127.0.0.1:13306)/xiaomi_mall?charset=utf8mb4&parseTime=True&loc=Local"
+  redis_addr: "127.0.0.1:6379"
+  redis_pw: "1234"
+
+rabbitmq:
+  mq_url: "amqp://guest:guest@127.0.0.1:5672/"
+
+oss:
+  access_key: "your_key"
+  secret_key: "your_secret"
+  bucket: "your_bucket"
+  endpoint: "oss-cn-shanghai.aliyuncs.com"
