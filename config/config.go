@@ -12,6 +12,7 @@ type Config struct {
 	Database DatabaseConfig `mapstructure:"database"`
 	RabbitMQ RabbitMQConfig `mapstructure:"rabbitmq"`
 	OSS      OSSConfig      `mapstructure:"oss"`
+	Jwt      JwtConfig      `mapstructure:"jwt"`
 }
 
 type ServerConfig struct {
@@ -34,6 +35,11 @@ type OSSConfig struct {
 	SecretKey string `mapstructure:"secret_key"`
 	Bucket    string `mapstructure:"bucket"`
 	Endpoint  string `mapstructure:"endpoint"`
+}
+
+type JwtConfig struct {
+	AccessSecret string `mapstructure:"access_secret"`
+	AccessExpire int64  `mapstructure:"access_expire"`
 }
 
 // 全局配置实例

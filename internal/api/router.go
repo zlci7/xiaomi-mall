@@ -2,26 +2,24 @@ package api
 
 import (
 	"net/http"
+	"xiaomi-mall/internal/api/handler"
 
-	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin" // 引入 v1 包
 )
 
 func NewRouter() *gin.Engine {
 	r := gin.Default()
 
-	// 1. 健康检查接口 (用于运维检测服务是否存活)
 	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
+		c.JSON(http.StatusOK, gin.H{"message": "pong"})
 	})
 
-	// 2. 这里的 v1 路由组稍后会放用户、商品接口
-	v1 := r.Group("/api/v1")
+	// V1 版本接口
+	v1Group := r.Group("/api")
 	{
-		v1.GET("test", func(c *gin.Context) {
-			c.JSON(200, "API v1 works")
-		})
+		// 用户模块
+		v1Group.POST("/user/register", handler.UserRegister)
+		v1Group.POST("/user/login", handler.UserLogin)
 	}
 
 	return r
