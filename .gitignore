@@ -58,6 +58,9 @@ logs/
 # Docker data volumes (重点！)
 deploy/components/mysql/data/
 deploy/components/redis/data/
+config/config.yaml
+deploy/components/es/data/
+deploy/components/rabbitmq/data/
 
 # Temporary files
 tmp/
