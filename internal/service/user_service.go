@@ -20,7 +20,7 @@ var User = new(UserService)
 // Register 接收 DTO，返回 VO
 func (s *UserService) Register(req dto.UserRegisterReq) (*vo.UserRegisterResp, error) {
 	// 1. 业务校验
-	exist, err := dao.User.ExistOrNotByUserName(req.UserName)
+	exist, err := dao.User.ExistOrNotByPhone(req.Phone)
 	if err != nil {
 		return nil, xerr.NewErrCode(xerr.DB_ERROR)
 	}
@@ -36,7 +36,7 @@ func (s *UserService) Register(req dto.UserRegisterReq) (*vo.UserRegisterResp, e
 
 	// 3️⃣ DTO → Model 转换（在 Service 层完成）
 	userModel := &model.User{
-		UserName:       req.UserName,
+		Phone:          req.Phone,
 		Email:          req.Email,
 		PasswordDigest: passwordDigest,
 		NickName:       req.NickName,
@@ -53,9 +53,9 @@ func (s *UserService) Register(req dto.UserRegisterReq) (*vo.UserRegisterResp, e
 
 	// 5️⃣ Model → VO 转换（在 Service 层完成）
 	resp := &vo.UserRegisterResp{
-		UserID:   userModel.ID,
-		UserName: userModel.UserName,
+		Phone:    userModel.Phone,
 		NickName: userModel.NickName,
+		UserID:   userModel.ID,
 	}
 
 	// 6️⃣ 返回 VO（不是 Model）
@@ -65,7 +65,7 @@ func (s *UserService) Register(req dto.UserRegisterReq) (*vo.UserRegisterResp, e
 // Login 接收 DTO，返回 VO
 func (s *UserService) Login(req dto.UserLoginReq) (*vo.UserLoginResp, error) {
 	// 1. 查找用户（DAO 返回 Model）
-	user, err := dao.User.GetUserByUserName(req.UserName)
+	user, err := dao.User.GetUserByPhone(req.Phone)
 	if err != nil {
 		return nil, xerr.NewErrCode(xerr.USER_NOT_FOUND)
 	}

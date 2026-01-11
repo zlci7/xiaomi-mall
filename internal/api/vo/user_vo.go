@@ -5,7 +5,7 @@ import "xiaomi-mall/internal/model"
 // UserRegisterResp 注册响应
 type UserRegisterResp struct {
 	UserID   uint   `json:"user_id"`
-	UserName string `json:"user_name"`
+	Phone string `json:"phone"`
 	NickName string `json:"nick_name"`
 }
 
@@ -18,12 +18,12 @@ type UserLoginResp struct {
 // UserInfo 用户信息
 type UserInfo struct {
 	UserID   uint   `json:"user_id"`
-	UserName string `json:"user_name"`
+	Phone string `json:"phone"`
 	NickName string `json:"nick_name"`
 	Email    string `json:"email"`
 	Avatar   string `json:"avatar"`
 	Money    int64  `json:"money"`
-	Role     int32  `json:"role"`
+	Role     int  `json:"role"`
 	Status   string `json:"status"`
 }
 
@@ -31,7 +31,7 @@ type UserInfo struct {
 func NewUserInfo(user *model.User) UserInfo {
 	return UserInfo{
 		UserID:   user.ID,
-		UserName: user.UserName,
+		Phone: user.Phone,
 		NickName: user.NickName,
 		Email:    user.Email,
 		Avatar:   user.Avatar,

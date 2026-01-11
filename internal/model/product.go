@@ -10,11 +10,11 @@ type Category struct {
 }
 
 // Carousel 轮播图 (首页广告)
-type Carousel struct {
-	gorm.Model
-	ImgPath   string `json:"img_path"`
-	ProductID uint   `json:"product_id"` // 点击跳转到哪个商品
-}
+// type Carousel struct {
+// 	gorm.Model
+// 	ImgPath   string `json:"img_path"`
+// 	ProductID uint   `json:"product_id"` // 点击跳转到哪个商品
+// }
 
 // Product (SPU) 商品主表
 type Product struct {

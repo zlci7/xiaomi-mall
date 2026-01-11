@@ -22,6 +22,7 @@ type Order struct {
 	ExpireTime      time.Time `json:"expire_time"`                              // 订单过期时间（用于自动关单）
 	Remark          string    `gorm:"type:text" json:"remark"`                  // 用户备注
 	TrackingNumber  string    `json:"tracking_number"`                          // 物流单号
+	Version         int       `gorm:"default:0" json:"version"`                 // 乐观锁版本号
 }
 
 // OrderItem 订单详情表 (商品快照)

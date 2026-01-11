@@ -8,7 +8,7 @@ import (
 	"syscall"
 
 	"xiaomi-mall/config"
-	"xiaomi-mall/internal/api"
+	"xiaomi-mall/internal/api/router"
 	"xiaomi-mall/internal/dao"
 )
 
@@ -26,7 +26,7 @@ func main() {
 	dao.InitRedis()
 
 	// 4. 初始化 Gin 框架
-	r := api.NewRouter()
+	r := router.InitRouter()
 
 	// 5. 启动服务（非阻塞）
 	addr := config.AppConfig.Server.Port
