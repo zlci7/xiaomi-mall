@@ -2,6 +2,7 @@ package router
 
 import (
 	"xiaomi-mall/internal/api/handler"
+	"xiaomi-mall/internal/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,8 +16,8 @@ func RegisterUserRoutes(rg *gin.RouterGroup) {
 		userGroup.POST("/login", handler.UserLogin)
 
 		// 需要认证的接口
-		// auth := userGroup.Group("")
-		// auth.Use(middleware.JWTAuth()) // JWT 认证中间件
+		auth := userGroup.Group("")
+		auth.Use(middleware.JWTAuth()) // JWT 认证中间件
 		// {
 		// 	auth.GET("/profile", handler.GetUserProfile)
 		// 	auth.PUT("/profile", handler.UpdateUserProfile)

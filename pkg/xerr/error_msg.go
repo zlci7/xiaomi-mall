@@ -21,6 +21,8 @@ func init() {
 	message[USER_NOT_LOGIN] = "用户未登录"
 	message[USER_CREATE_ERROR] = "用户创建失败"
 	message[TOKEN_GEN_ERROR] = "Token生成失败"
+	message[TOKEN_NOT_EXIST] = "Token不存在"
+	message[TOKEN_INVALID] = "Token无效"
 
 }
 

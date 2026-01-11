@@ -7,7 +7,7 @@ func Migrate(db *gorm.DB) error {
 	err := db.AutoMigrate(
 		&User{},
 		&Address{},
-		// &Category{},
+		&Category{},
 		&Product{},
 		&ProductSku{},
 		// &Carousel{},

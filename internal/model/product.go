@@ -5,16 +5,9 @@ import "gorm.io/gorm"
 // Category 商品分类
 type Category struct {
 	gorm.Model
-	Name     string `json:"name"`
-	ParentID uint   `json:"parent_id"` // 父分类ID，0代表顶级分类
+	Name string `json:"name"`
+	// CategoryID uint   `json:"category_id"` // 父分类ID，0代表顶级分类
 }
-
-// Carousel 轮播图 (首页广告)
-// type Carousel struct {
-// 	gorm.Model
-// 	ImgPath   string `json:"img_path"`
-// 	ProductID uint   `json:"product_id"` // 点击跳转到哪个商品
-// }
 
 // Product (SPU) 商品主表
 type Product struct {
@@ -41,3 +34,10 @@ type ProductSku struct {
 	Code      string `json:"code"`                        // 商家编码
 	Version   int    `gorm:"default:0" json:"version"`    // 乐观锁版本号
 }
+
+// Carousel 轮播图 (首页广告)
+// type Carousel struct {
+// 	gorm.Model
+// 	ImgPath   string `json:"img_path"`
+// 	ProductID uint   `json:"product_id"` // 点击跳转到哪个商品
+// }

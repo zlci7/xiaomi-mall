@@ -22,6 +22,8 @@ const (
 	USER_NOT_LOGIN      = 200007 // 用户未登录
 	USER_CREATE_ERROR   = 200008 // 用户创建失败
 	TOKEN_GEN_ERROR     = 200009 // Token生成失败
+	TOKEN_NOT_EXIST     = 200010 // Token不存在
+	TOKEN_INVALID       = 200011 // Token无效
 )
 
 // CodeError 自定义错误结构体
