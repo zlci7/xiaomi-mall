@@ -79,9 +79,9 @@ func (d *ProductDao) GetSkuStock(skuID uint) (stock int, err error) {
 // ============ 库存扣减（乐观锁） ============
 
 // 8. 扣减库存（乐观锁版本）- 关键！
-func (d *ProductDao) DecrementStock(skuID uint, quantity int, version int) (rowsAffected int64, err error) {
+func (d *ProductDao) DecrementStock(tx *gorm.DB, skuID uint, quantity int, version int) (rowsAffected int64, err error) {
 	// 正确的乐观锁扣减逻辑
-	result := DB.Model(&model.ProductSku{}).
+	result := tx.Model(&model.ProductSku{}).
 		Where("id = ? AND version = ? AND stock >= ?", skuID, version, quantity).
 		// ↑ SKU ID     ↑ 版本号      ↑ 库存充足
 		Updates(map[string]interface{}{
@@ -103,4 +103,19 @@ func (d *ProductDao) IncrementStock(skuID uint, quantity int) error {
 			"stock":   gorm.Expr("stock + ?", quantity),
 			"version": gorm.Expr("version + ?", 1),
 		}).Error
+}
+
+// ============ 商品管理（CRUD） ============
+
+// internal/dao/product.go
+
+// 10. 创建商品SPU（支持事务）
+func (d *ProductDao) CreateProductSPU(tx *gorm.DB, product *model.Product) error {
+	return tx.Create(product).Error
+	//     ↑ 使用传入的 tx，而不是全局 DB
+}
+
+// 11. 创建商品SKU（支持事务）
+func (d *ProductDao) CreateProductSKUs(tx *gorm.DB, skus []*model.ProductSku) error {
+	return tx.Create(skus).Error
 }

@@ -40,6 +40,10 @@ func main() {
 		}
 	}()
 
+	// 临时调试
+	fmt.Println("JWT Secret Key:", config.AppConfig.Jwt.AccessSecret)
+	fmt.Println("JWT Expire:", config.AppConfig.Jwt.AccessExpire)
+
 	// 6. 关闭服务
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)

@@ -11,7 +11,6 @@ import (
 
 // 最小实现：只做必要的 3 个接口
 func AdminCreateProduct(c *gin.Context) {
-	// 创建商品 + SKU（事务）
 	//1.绑定请求参数
 	var req dto.CreateProductReq
 	if err := c.ShouldBindJSON(&req); err != nil {

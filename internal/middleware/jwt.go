@@ -31,7 +31,7 @@ func JWTAuth() gin.HandlerFunc {
 		// 3️⃣ 提取 UserID（这里假设是 float64 类型，因为 JSON 默认数字是 float64）
 		uid, ok := claims["uid"].(float64)
 		if !ok {
-			response.Error(c, xerr.TOKEN_INVALID, "")
+			response.Error(c, xerr.TOKEN_USER_ID_ERROR, "")
 			c.Abort()
 			return
 		}

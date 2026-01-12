@@ -23,7 +23,11 @@ const (
 	USER_CREATE_ERROR   = 200008 // 用户创建失败
 	TOKEN_GEN_ERROR     = 200009 // Token生成失败
 	TOKEN_NOT_EXIST     = 200010 // Token不存在
-	TOKEN_INVALID       = 200011 // Token无效
+	TOKEN_INVALID       = 200011 // Token无效、
+	TOKEN_USER_ID_ERROR = 200012 // 用户ID获取失败
+
+	//商品模块错误码 (300xxx)
+	PRODUCT_CREATE_ERROR = 300001 // 商品创建失败
 )
 
 // CodeError 自定义错误结构体

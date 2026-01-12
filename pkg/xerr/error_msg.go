@@ -23,6 +23,10 @@ func init() {
 	message[TOKEN_GEN_ERROR] = "Token生成失败"
 	message[TOKEN_NOT_EXIST] = "Token不存在"
 	message[TOKEN_INVALID] = "Token无效"
+	message[TOKEN_USER_ID_ERROR] = "用户ID获取失败"
+
+	// --- 商品模块错误 300xxx ---
+	message[PRODUCT_CREATE_ERROR] = "商品创建失败"
 
 }
 
