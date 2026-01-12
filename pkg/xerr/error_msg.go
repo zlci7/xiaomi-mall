@@ -27,6 +27,7 @@ func init() {
 
 	// --- 商品模块错误 300xxx ---
 	message[PRODUCT_CREATE_ERROR] = "商品创建失败"
+	message[PRODUCT_UPDATE_ERROR] = ""
 
 }
 

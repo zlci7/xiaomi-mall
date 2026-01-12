@@ -84,3 +84,19 @@ func (s *ProductService) CreateProduct(req dto.CreateProductReq) (*vo.CreateProd
 
 	return resp, nil
 }
+
+func (s *ProductService) UpdateProductStock(req dto.UpdateProductStockReq) error {
+	err := dao.Product.UpdateSkuStock(req.ProductSKUID, req.Stock)
+	if err != nil {
+		return xerr.NewErrCode(xerr.PRODUCT_CREATE_ERROR)
+	}
+	return nil
+}
+
+func (s *ProductService) UpdateProductOnSale(req dto.UpdateProductOnSaleReq) error {
+	err := dao.Product.UpdateProductOnSale(req.ProductID, req.OnSale)
+	if err != nil {
+		return xerr.NewErrCode(xerr.PRODUCT_UPDATE_ERROR)
+	}
+	return nil
+}

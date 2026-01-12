@@ -30,8 +30,36 @@ func AdminCreateProduct(c *gin.Context) {
 
 func AdminUpdateProductStock(c *gin.Context) {
 	// 补充库存（运营常用）
+	//1.绑定请求参数
+	var req dto.UpdateProductStockReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Error(c, xerr.REUQEST_PARAM_ERROR, "")
+		return
+	}
+	//2.调用Service
+	err := service.Product.UpdateProductStock(req)
+	if err != nil {
+		handleServiceError(c, err)
+		return
+	}
+	//3.返回响应
+	response.Success(c, nil)
 }
 
 func AdminToggleProductOnSale(c *gin.Context) {
 	// 上架/下架（简单的状态切换）
+	//1.绑定请求参数
+	var req dto.UpdateProductOnSaleReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Error(c, xerr.REUQEST_PARAM_ERROR, "")
+		return
+	}
+	//2.调用Service
+	err := service.Product.UpdateProductOnSale(req)
+	if err != nil {
+		handleServiceError(c, err)
+		return
+	}
+	//3.返回响应
+	response.Success(c, nil)
 }

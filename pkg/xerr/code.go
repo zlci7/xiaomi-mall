@@ -28,6 +28,8 @@ const (
 
 	//商品模块错误码 (300xxx)
 	PRODUCT_CREATE_ERROR = 300001 // 商品创建失败
+	PRODUCT_UPDATE_ERROR = 300002 //商品更新失败
+
 )
 
 // CodeError 自定义错误结构体

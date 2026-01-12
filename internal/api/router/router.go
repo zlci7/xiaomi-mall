@@ -18,7 +18,7 @@ func InitRouter() *gin.Engine {
 	})
 
 	// API v1 路由组
-	v1 := r.Group("/api/v1")
+	v1 := r.Group("/api")
 	{
 		RegisterUserRoutes(v1)  // 用户路由
 		RegisterAdminRoutes(v1) // 管理员路由

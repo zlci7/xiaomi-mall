@@ -119,3 +119,18 @@ func (d *ProductDao) CreateProductSPU(tx *gorm.DB, product *model.Product) error
 func (d *ProductDao) CreateProductSKUs(tx *gorm.DB, skus []*model.ProductSku) error {
 	return tx.Create(skus).Error
 }
+
+// 12. 更新SKU库存（直接设置库存值）
+func (d *ProductDao) UpdateSkuStock(skuID uint, stock int) error {
+	return DB.Model(&model.ProductSku{}).
+		Where("id = ?", skuID).
+		Updates(map[string]interface{}{
+			"stock":   stock,
+			"version": gorm.Expr("version + ?", 1),
+		}).Error
+}
+
+// 13. 更新商品状态
+func (d *ProductDao) UpdateProductOnSale(productID uint, onSale bool) error {
+	return DB.Model(&model.Product{}).Where("id=?", productID).Update("on_sale", onSale).Error
+}

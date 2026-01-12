@@ -15,16 +15,16 @@ type CreateProductResp struct {
 }
 
 // 更新商品库存请求
-type UpdateProductStockResp struct {
-	ProductID   uint   `json:"product_id"`
-	ProductName string `json:"product_name"`
-	Stock       int    `json:"stock"`
-}
+// type UpdateProductStockResp struct {
+// 	ProductID   uint   `json:"product_id"`
+// 	ProductName string `json:"product_name"`
+// 	Stock       int    `json:"stock"`
+// }
 
 // 更新商品上架状态请求
-type UpdateProductOnSaleResp struct {
-	ProductID uint `json:"product_id"`
-	OnSale    bool `json:"on_sale"`
-}
+// type UpdateProductOnSaleResp struct {
+// 	ProductID uint `json:"product_id"`
+// 	OnSale    bool `json:"on_sale"`
+// }
 
 // ============ 商品查询 VO ============

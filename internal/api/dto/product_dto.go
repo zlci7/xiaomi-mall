@@ -23,8 +23,9 @@ type CreateProductReq struct {
 
 // 更新商品库存请求
 type UpdateProductStockReq struct {
-	ProductID uint `json:"product_id"`
-	Stock     int  `json:"stock"`
+	ProductID    uint `json:"product_id"`
+	Stock        int  `json:"stock"`
+	ProductSKUID uint `json:"product_sku_id"`
 }
 
 // 更新商品上架状态请求
