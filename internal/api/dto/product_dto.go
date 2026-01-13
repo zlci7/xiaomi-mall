@@ -35,3 +35,9 @@ type UpdateProductOnSaleReq struct {
 }
 
 // ============ 商品查询 DTO ============
+
+type ProductListReq struct {
+}
+
+type ProductDetailReq struct {
+}
