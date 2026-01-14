@@ -85,6 +85,7 @@ func (s *ProductService) CreateProduct(req dto.CreateProductReq) (*vo.CreateProd
 	return resp, nil
 }
 
+// 更新商品库存
 func (s *ProductService) UpdateProductStock(req dto.UpdateProductStockReq) error {
 	err := dao.Product.UpdateSkuStock(req.ProductSKUID, req.Stock)
 	if err != nil {
@@ -93,10 +94,31 @@ func (s *ProductService) UpdateProductStock(req dto.UpdateProductStockReq) error
 	return nil
 }
 
+// 更新商品上架状态
 func (s *ProductService) UpdateProductOnSale(req dto.UpdateProductOnSaleReq) error {
 	err := dao.Product.UpdateProductOnSale(req.ProductID, req.OnSale)
 	if err != nil {
 		return xerr.NewErrCode(xerr.PRODUCT_UPDATE_ERROR)
 	}
 	return nil
+}
+
+// 商品分页查询
+func (s *ProductService) ProductList(req dto.ProductListReq) (*vo.ProductListResp, error) {
+	return nil, nil
+}
+
+// 商品详情查询
+func (s *ProductService) ProductDetail(req dto.ProductDetailReq) (*vo.ProductDetailResp, error) {
+	return nil, nil
+}
+
+// SKU详情查询
+func (s *ProductService) SkuDetail(req dto.SkuDetailReq) (*vo.SkuDetailResp, error) {
+	return nil, nil
+}
+
+// 商品分类列表查询
+func (s *ProductService) CategoryList() (*vo.CategoryListResp, error) {
+	return nil, nil
 }

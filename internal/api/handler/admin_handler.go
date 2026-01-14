@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// 最小实现：只做必要的 3 个接口
+// 管理员创建商品
 func AdminCreateProduct(c *gin.Context) {
 	//1.绑定请求参数
 	var req dto.CreateProductReq
@@ -28,6 +28,7 @@ func AdminCreateProduct(c *gin.Context) {
 
 }
 
+// 管理员更新商品库存
 func AdminUpdateProductStock(c *gin.Context) {
 	// 补充库存（运营常用）
 	//1.绑定请求参数
@@ -46,6 +47,7 @@ func AdminUpdateProductStock(c *gin.Context) {
 	response.Success(c, nil)
 }
 
+// 管理员切换商品上架状态
 func AdminToggleProductOnSale(c *gin.Context) {
 	// 上架/下架（简单的状态切换）
 	//1.绑定请求参数

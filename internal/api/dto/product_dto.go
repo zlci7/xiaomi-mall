@@ -37,7 +37,21 @@ type UpdateProductOnSaleReq struct {
 // ============ 商品查询 DTO ============
 
 type ProductListReq struct {
+	Page       int    `form:"page" binding:"omitempty,min=1"`                                      // 页码，默认1
+	PageSize   int    `form:"page_size" binding:"omitempty,min=1,max=100"`                         // 每页数量，默认10，最大100
+	CategoryID uint   `form:"category_id"`                                                         // 分类ID，可选
+	Keyword    string `form:"keyword" binding:"omitempty,max=100"`                                 // 搜索关键词，可选，最大100字符
+	SortBy     string `form:"sort_by" binding:"omitempty,oneof=price num click_num created_at id"` // 排序字段：price(价格), num(销量), click_num(点击量), created_at(创建时间)，默认id
+	Order      string `form:"order" binding:"omitempty,oneof=asc desc"`                            // 排序方向：asc(升序), desc(降序)，默认desc
+	OnSale     *bool  `form:"on_sale"`                                                             // 是否上架，可选（nil表示不筛选）
 }
 
+// 商品详情请求 - GET /products/:product_id
 type ProductDetailReq struct {
+	ProductID uint `uri:"product_id" binding:"required,min=1"`
+}
+
+// SKU 详情请求 - GET /products/skus/:sku_id
+type SkuDetailReq struct {
+	SkuID uint `uri:"sku_id" binding:"required,min=1"`
 }
