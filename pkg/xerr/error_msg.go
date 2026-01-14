@@ -31,6 +31,7 @@ func init() {
 	message[PRODUCT_SKU_NOT_FOUND] = "商品SKU不存在"
 	message[PRODUCT_SKU_MISMATCH] = "SKU不属于该商品"
 	message[PRODUCT_STOCK_INVALID] = "库存值无效，必须大于等于0"
+	message[PRODUCT_NOT_FOUND] = "商品不存在"
 
 }
 

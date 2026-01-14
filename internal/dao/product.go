@@ -12,21 +12,65 @@ type ProductDao struct{}
 
 // ============ 商品查询（基础CRUD） ============
 
-// 1. 商品列表查询（分页 + 筛选）
-func (d *ProductDao) GetProductList(categoryID uint, page, pageSize int) (products []*model.Product, total int64, err error) {
-	query := DB.Model(&model.Product{}).Where("on_sale = ?", true) // 只查上架商品
+// 1. 商品列表查询（支持所有筛选条件）
+func (d *ProductDao) GetProductList(
+	categoryID uint,
+	keyword string,
+	onSale *bool,
+	sortBy string,
+	order string,
+	page, pageSize int,
+) (products []*model.Product, total int64, err error) {
+	query := DB.Model(&model.Product{})
 
-	// 按分类筛选（可选）
+	// ========== 筛选条件 ==========
+
+	// 1. 按分类筛选（可选）
 	if categoryID > 0 {
 		query = query.Where("category_id = ?", categoryID)
 	}
 
-	// 统计总数
+	// 2. 按关键词搜索（可选，模糊查询商品名）
+	if keyword != "" {
+		query = query.Where("name LIKE ?", "%"+keyword+"%")
+	}
+
+	// 3. 按上架状态筛选（可选）
+	if onSale != nil {
+		query = query.Where("on_sale = ?", *onSale)
+	}
+
+	// ========== 统计总数 ==========
 	query.Count(&total)
 
-	// 分页查询
+	// ========== 排序 ==========
+	// 默认：按 ID 倒序
+	orderClause := "id DESC"
+
+	// 自定义排序
+	if sortBy != "" {
+		// 防止 SQL 注入：只允许白名单字段
+		validSortFields := map[string]bool{
+			"price":      true, // 价格
+			"num":        true, // 销量
+			"click_num":  true, // 点击量
+			"created_at": true, // 创建时间
+			"id":         true, // ID
+		}
+
+		if validSortFields[sortBy] {
+			// 排序方向（默认 DESC）
+			if order == "asc" {
+				orderClause = sortBy + " ASC"
+			} else {
+				orderClause = sortBy + " DESC"
+			}
+		}
+	}
+
+	// ========== 分页查询 ==========
 	offset := (page - 1) * pageSize
-	err = query.Order("id DESC").Offset(offset).Limit(pageSize).Find(&products).Error
+	err = query.Order(orderClause).Offset(offset).Limit(pageSize).Find(&products).Error
 	return
 }
 
@@ -40,19 +84,6 @@ func (d *ProductDao) GetProductByID(productID uint) (product *model.Product, err
 func (d *ProductDao) IncrementClickNum(productID uint) error {
 	return DB.Model(&model.Product{}).Where("id = ?", productID).
 		UpdateColumn("click_num", gorm.Expr("click_num + ?", 1)).Error
-}
-
-// 4. 搜索商品（按商品名模糊查询）
-func (d *ProductDao) SearchProducts(keyword string, page, pageSize int) (products []*model.Product, total int64, err error) {
-	query := DB.Model(&model.Product{}).
-		Where("on_sale = ?", true).
-		Where("name LIKE ?", "%"+keyword+"%")
-
-	query.Count(&total)
-
-	offset := (page - 1) * pageSize
-	err = query.Order("id DESC").Offset(offset).Limit(pageSize).Find(&products).Error
-	return
 }
 
 // ============ SKU 相关查询 ============

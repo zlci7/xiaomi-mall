@@ -6,11 +6,10 @@ var Category = new(CategoryDao)
 
 type CategoryDao struct{}
 
-// 1. 获取所有分类（一级分类，不含父子关系）
+// 1. 获取所有分类（简化版，只有一级分类）
 func (d *CategoryDao) GetAllCategories() (categories []*model.Category, err error) {
-	// 如果简化为一级分类，parent_id 都是 0 或者不查这个字段
+	// 注意：Category 模型中没有 parent_id 字段，所以是扁平结构
 	err = DB.Model(&model.Category{}).
-		Where("parent_id = ?", 0). // 只查一级分类
 		Order("id ASC").
 		Find(&categories).Error
 	return
