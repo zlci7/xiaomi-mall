@@ -22,8 +22,10 @@ func InitRouter() *gin.Engine {
 	{
 		RegisterUserRoutes(v1)    // 用户路由
 		RegisterAdminRoutes(v1)   // 管理员路由
-		RegisterProductRoutes(v1) // 商品路由（将来添加）
-		// RegisterOrderRoutes(v1)   // 订单路由（将来添加）
+		RegisterProductRoutes(v1) // 商品路由
+		RegisterOrderRoutes(v1)   // 订单路由
+		RegisterAddressRoutes(v1) // 地址路由
+		RegisterSeckillRoutes(v1) // 秒杀路由
 	}
 
 	return r
