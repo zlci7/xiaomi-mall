@@ -11,8 +11,8 @@ func RegisterAddressRoutes(rg *gin.RouterGroup) {
 	addressGroup := rg.Group("/address")
 	addressGroup.Use(middleware.JWTAuth())
 	{
-		addressGroup.GET("/list", handler.GetAddressList)   // 地址列表
-		addressGroup.POST("/save", handler.SaveAddress)     // 创建/编辑地址
-		addressGroup.POST("/delete", handler.DeleteAddress) // 删除地址
+		// addressGroup.GET("/list", handler.GetAddressList)   // 地址列表
+		// addressGroup.POST("/save", handler.SaveAddress)     // 创建/编辑地址
+		// addressGroup.POST("/delete", handler.DeleteAddress) // 删除地址
 	}
 }
