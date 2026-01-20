@@ -33,6 +33,7 @@ type ProductSku struct {
 	Stock     int    `gorm:"check:stock>=0" json:"stock"` // 库存，数据库层面约束不能小于0
 	Code      string `json:"code"`                        // 商家编码
 	Version   int    `gorm:"default:0" json:"version"`    // 乐观锁版本号
+	ImgPath   string `json:"img_path"`                    // 图片路径
 }
 
 // Carousel 轮播图 (首页广告)

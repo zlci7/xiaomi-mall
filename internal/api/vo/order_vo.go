@@ -72,12 +72,9 @@ type OrderDetailResp struct {
 
 // 收货地址快照
 type AddressSnapshotVO struct {
-	Name     string `json:"name"`
-	Phone    string `json:"phone"`
-	Province string `json:"province"`
-	City     string `json:"city"`
-	District string `json:"district"`
-	Address  string `json:"address"`
+	Name    string `json:"name"`
+	Phone   string `json:"phone"`
+	Address string `json:"address"`
 }
 
 // 订单商品详情项

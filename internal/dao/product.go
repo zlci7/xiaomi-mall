@@ -107,6 +107,11 @@ func (d *ProductDao) GetSkuStock(skuID uint) (stock int, err error) {
 	return
 }
 
+func (d *ProductDao) GetSkusByIDs(skuIDs []uint) (skus []*model.ProductSku, err error) {
+	err = DB.Model(&model.ProductSku{}).Where("id IN (?)", skuIDs).Find(&skus).Error
+	return
+}
+
 // ============ 库存扣减（乐观锁） ============
 
 // 8. 扣减库存（乐观锁版本）- 关键！
