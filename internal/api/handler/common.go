@@ -10,7 +10,8 @@ import (
 // handleServiceError 统一处理 Service 层错误（避免重复代码）
 func handleServiceError(c *gin.Context, err error) {
 	if codeErr, ok := err.(*xerr.CodeError); ok {
-		response.Error(c, codeErr.GetErrCode(), "")
+		// 传递自定义错误消息（如果有的话）
+		response.Error(c, codeErr.GetErrCode(), codeErr.GetErrMsg())
 	} else {
 		response.Error(c, xerr.SERVER_COMMON_ERROR, "")
 	}
