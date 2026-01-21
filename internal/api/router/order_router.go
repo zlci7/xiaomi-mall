@@ -1,6 +1,7 @@
 package router
 
 import (
+	"xiaomi-mall/internal/api/handler"
 	"xiaomi-mall/internal/middleware"
 
 	"github.com/gin-gonic/gin"
@@ -12,7 +13,7 @@ func RegisterOrderRoutes(rg *gin.RouterGroup) {
 	orderGroup.Use(middleware.JWTAuth()) // JWT 认证
 	{
 		// 普通订单
-		// orderGroup.POST("/create", handler.CreateOrder)      // 创建订单
+		orderGroup.POST("/create", handler.CreateOrder) // 创建订单
 		// orderGroup.POST("/pay", handler.PayOrder)            // 支付订单
 		// orderGroup.POST("/cancel", handler.CancelOrder)      // 取消订单
 		// orderGroup.GET("/list", handler.GetOrderList)        // 订单列表

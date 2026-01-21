@@ -1,7 +1,6 @@
 package service
 
 import (
-	"context"
 	"encoding/json"
 	"time"
 	"xiaomi-mall/internal/api/dto"
@@ -20,9 +19,7 @@ type OrderService struct{}
 var Order = new(OrderService)
 
 // 创建订单
-func (OrderService) CreateOrder(req dto.CreateOrderReq) (resp *vo.CreateOrderResp, err error) {
-	ctx := context.Background()
-	userId := ctx.Value("user_id").(uint)
+func (OrderService) CreateOrder(userID uint, req dto.CreateOrderReq) (resp *vo.CreateOrderResp, err error) {
 
 	// ========== 【事务外】Step 1: 参数校验 ==========
 	if len(req.Items) == 0 {
@@ -53,11 +50,11 @@ func (OrderService) CreateOrder(req dto.CreateOrderReq) (resp *vo.CreateOrderRes
 	}
 
 	// ========== 【事务外】Step 3: 查询用户地址 ==========
-	address, err := dao.Address.GetbyAddressId(req.AddressID)
+	address, err := dao.Address.GetByID(req.AddressID)
 	if err != nil {
 		return nil, xerr.NewErrMsg("地址不存在")
 	}
-	if address.UserID != userId {
+	if address.UserID != userID {
 		return nil, xerr.NewErrMsg("地址不属于当前用户")
 	}
 
@@ -78,7 +75,7 @@ func (OrderService) CreateOrder(req dto.CreateOrderReq) (resp *vo.CreateOrderRes
 	})
 	// 6.2 订单主表数据
 	order := &model.Order{
-		UserID:          userId,
+		UserID:          userID,
 		OrderNum:        orderNum,
 		AllPrice:        totalAmount,
 		PayStatus:       0,
@@ -146,4 +143,52 @@ func (OrderService) CreateOrder(req dto.CreateOrderReq) (resp *vo.CreateOrderRes
 		TotalAmount: totalAmount,
 		ExpireTime:  order.ExpireTime,
 	}, nil
+}
+
+// CloseOrder 自动关闭订单（超时未支付）
+func (s *OrderService) CloseOrder(orderNo string) error {
+	// 1️⃣ 查询订单
+	order, err := dao.Order.GetOrderByOrderNum(orderNo)
+	if err != nil {
+		return err
+	}
+
+	// 2️⃣ 只关闭未支付的订单
+	if order.PayStatus != 0 {
+		return nil // 已支付，跳过
+	}
+	return dao.DB.Transaction(func(tx *gorm.DB) error {
+		// 3️⃣ 更新订单状态（乐观锁）
+		rowsAffected, err := dao.Order.UpdateOrderStatus(
+			tx,
+			orderNo,
+			4, // OrderStatus = 4 (已取消)
+			order.Version,
+		)
+
+		if err != nil {
+			return err
+		}
+
+		if rowsAffected == 0 {
+			return xerr.NewErrMsg("订单状态已变更")
+		}
+
+		// 4️⃣ 回滚库存
+		items, err := dao.Order.GetOrderItems(orderNo)
+		if err != nil {
+			return err
+		}
+
+		for _, item := range items {
+			tx.Model(&model.ProductSku{}).
+				Where("id = ?", item.ProductSkuID).
+				Updates(map[string]interface{}{
+					"stock":   gorm.Expr("stock + ?", item.Num),
+					"version": gorm.Expr("version + 1"),
+				})
+		}
+
+		return nil
+	})
 }

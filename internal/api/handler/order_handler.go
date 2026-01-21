@@ -11,6 +11,8 @@ import (
 
 // 创建订单
 func CreateOrder(c *gin.Context) {
+	//0.获取用户ID
+	userID := c.GetUint("user_id")
 	//1.绑定请求参数
 	var req dto.CreateOrderReq
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -18,7 +20,7 @@ func CreateOrder(c *gin.Context) {
 		return
 	}
 	//2.调用Service
-	resp, err := service.Order.CreateOrder(req)
+	resp, err := service.Order.CreateOrder(userID, req)
 	if err != nil {
 		handleServiceError(c, err)
 		return

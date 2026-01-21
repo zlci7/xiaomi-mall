@@ -4,7 +4,7 @@ package dto
 type SaveAddressReq struct {
 	ID        uint   `json:"id"` // ID > 0 表示编辑，= 0 表示新增
 	Name      string `json:"name" binding:"required,max=50"`
-	Phone     string `json:"phone" binding:"required,mobile"` // 自定义验证：手机号
+	Phone     string `json:"phone" binding:"required,len=11,numeric"`
 	Address   string `json:"address" binding:"required,max=200"`
 	IsDefault bool   `json:"is_default"` // 是否默认地址
 }

@@ -10,6 +10,8 @@ import (
 	"xiaomi-mall/config"
 	"xiaomi-mall/internal/api/router"
 	"xiaomi-mall/internal/dao"
+	"xiaomi-mall/pkg/idgen"
+	"xiaomi-mall/pkg/queue"
 )
 
 func main() {
@@ -25,10 +27,19 @@ func main() {
 	// 3. 初始化 Redis
 	dao.InitRedis()
 
-	// 4. 初始化 Gin 框架
+	// 4. 初始化雪花算法（生成订单号）
+	if err := idgen.InitSnowflake(1); err != nil {
+		log.Fatalf("❌ 初始化雪花算法失败: %v", err)
+	}
+	fmt.Println("✅ 雪花算法初始化成功！")
+
+	// 5. 启动延迟队列扫描器
+	queue.StartDelayQueueScanner()
+
+	// 6. 初始化 Gin 框架
 	r := router.InitRouter()
 
-	// 5. 启动服务（非阻塞）
+	// 7. 启动服务（非阻塞）
 	addr := config.AppConfig.Server.Port
 	fmt.Printf("🚀 服务启动成功，监听地址：%s\n", addr)
 	fmt.Println("📌 本地访问: http://localhost" + addr + "/ping")
@@ -44,7 +55,7 @@ func main() {
 	fmt.Println("JWT Secret Key:", config.AppConfig.Jwt.AccessSecret)
 	fmt.Println("JWT Expire:", config.AppConfig.Jwt.AccessExpire)
 
-	// 6. 关闭服务
+	// 8. 关闭服务
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
