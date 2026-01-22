@@ -1,8 +1,8 @@
-package handler
+package userHandler
 
 import (
 	"xiaomi-mall/internal/api/dto"
-	"xiaomi-mall/internal/service"
+	"xiaomi-mall/internal/service/userService"
 	"xiaomi-mall/pkg/response"
 	"xiaomi-mall/pkg/xerr"
 
@@ -19,7 +19,7 @@ func ProductList(c *gin.Context) {
 		return
 	}
 	//2.调用Service
-	resp, err := service.Product.ProductList(req)
+	resp, err := userService.Product.ProductList(req)
 	if err != nil {
 		handleServiceError(c, err)
 		return
@@ -38,7 +38,7 @@ func ProductDetail(c *gin.Context) {
 		return
 	}
 	//2.调用Service
-	resp, err := service.Product.ProductDetail(req)
+	resp, err := userService.Product.ProductDetail(req)
 	if err != nil {
 		handleServiceError(c, err)
 		return
@@ -57,7 +57,7 @@ func SkuDetail(c *gin.Context) {
 		return
 	}
 	//2.调用Service
-	resp, err := service.Product.SkuDetail(req)
+	resp, err := userService.Product.SkuDetail(req)
 	if err != nil {
 		handleServiceError(c, err)
 		return

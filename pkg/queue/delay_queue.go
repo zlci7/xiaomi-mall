@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 	"xiaomi-mall/internal/dao"
-	"xiaomi-mall/internal/service"
+	"xiaomi-mall/internal/service/userService"
 
 	"github.com/go-redis/redis/v8"
 )
@@ -45,7 +45,7 @@ func ScanExpiredOrders() {
 		fmt.Printf("⏰ 发现过期订单：%s\n", orderNo)
 
 		// 执行关单逻辑
-		if err := service.Order.CloseOrder(orderNo); err == nil {
+		if err := userService.Order.CloseOrder(orderNo); err == nil {
 			// 3️⃣ 关单成功，从队列中移除
 			dao.Rdb.ZRem(ctx, "order:delay:queue", orderNo)
 			fmt.Printf("✅ 订单关闭成功：%s\n", orderNo)

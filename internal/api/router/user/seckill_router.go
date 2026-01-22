@@ -1,4 +1,4 @@
-package router
+package userRouter
 
 import (
 	"xiaomi-mall/internal/middleware"
@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterSeckillRoutes(rg *gin.RouterGroup) {
+func SeckillRoutes(rg *gin.RouterGroup) {
 	seckillGroup := rg.Group("/seckill")
 	seckillGroup.Use(middleware.JWTAuth()) // JWT 认证
 

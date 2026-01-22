@@ -1,6 +1,9 @@
 package router
 
 import (
+	adminRouter "xiaomi-mall/internal/api/router/admin"
+	userRouter "xiaomi-mall/internal/api/router/user"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,12 +23,14 @@ func InitRouter() *gin.Engine {
 	// API v1 路由组
 	v1 := r.Group("/api")
 	{
-		RegisterUserRoutes(v1)    // 用户路由
-		RegisterAdminRoutes(v1)   // 管理员路由
-		RegisterProductRoutes(v1) // 商品路由
-		RegisterOrderRoutes(v1)   // 订单路由
-		RegisterAddressRoutes(v1) // 地址路由
-		RegisterSeckillRoutes(v1) // 秒杀路由
+		adminRouter.ProductRoutes(v1) // 管理员商品路由
+		adminRouter.SeckillRoutes(v1) // 管理员秒杀路由
+
+		userRouter.AddressRoutes(v1) // 用户地址路由
+		userRouter.OrderRoutes(v1)   // 用户订单路由
+		userRouter.ProductRoutes(v1) // 用户商品路由
+		userRouter.SeckillRoutes(v1) // 用户秒杀路由
+		userRouter.UserRoutes(v1)    // 用户路由
 	}
 
 	return r

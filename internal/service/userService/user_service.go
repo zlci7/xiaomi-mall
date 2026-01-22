@@ -1,5 +1,5 @@
 // service/user_service.go
-package service
+package userService
 
 import (
 	"time"

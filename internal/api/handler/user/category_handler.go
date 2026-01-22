@@ -1,7 +1,7 @@
-package handler
+package userHandler
 
 import (
-	"xiaomi-mall/internal/service"
+	"xiaomi-mall/internal/service/userService"
 	"xiaomi-mall/pkg/response"
 
 	"github.com/gin-gonic/gin"
@@ -11,7 +11,7 @@ import (
 // GET /categories
 func CategoryList(c *gin.Context) {
 	//1.没有参数传递，直接调用Service
-	resp, err := service.Category.CategoryList()
+	resp, err := userService.Category.CategoryList()
 	if err != nil {
 		handleServiceError(c, err)
 		return

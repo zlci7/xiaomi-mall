@@ -17,11 +17,12 @@ type Product struct {
 	Title         string `json:"title"`
 	Info          string `gorm:"size:1000" json:"info"` // 详细描述
 	ImgPath       string `json:"img_path"`
-	Price         int64  `json:"price"`                        // 展示价格，单位：分
-	DiscountPrice int64  `json:"discount_price"`               // 折扣价，单位：分
-	OnSale        bool   `gorm:"default:false" json:"on_sale"` // 是否上架
-	Num           int    `json:"num"`                          // 销量
-	ClickNum      int    `json:"click_num"`                    // 点击量
+	Price         int64  `json:"price"`                                 // 展示价格，单位：分
+	DiscountPrice int64  `json:"discount_price"`                        // 折扣价，单位：分
+	OnSale        bool   `gorm:"default:false" json:"on_sale"`          // 是否上架
+	Num           int    `json:"num"`                                   // 销量
+	ClickNum      int    `json:"click_num"`                             // 点击量
+	IsSeckill     bool   `gorm:"default:false;index" json:"is_seckill"` // 是否秒杀商品
 }
 
 // ProductSku (SKU) 商品规格表 —— 库存管理的原子单位

@@ -1,8 +1,8 @@
-package handler
+package userHandler
 
 import (
 	"xiaomi-mall/internal/api/dto"
-	"xiaomi-mall/internal/service"
+	"xiaomi-mall/internal/service/userService"
 	"xiaomi-mall/pkg/response"
 	"xiaomi-mall/pkg/xerr"
 
@@ -20,7 +20,7 @@ func GetAddressList(c *gin.Context) {
 	}
 
 	// 2. 调用 Service
-	resp, err := service.Address.GetAddressList(userID)
+	resp, err := userService.Address.GetAddressList(userID)
 	if err != nil {
 		handleServiceError(c, err)
 		return
@@ -48,7 +48,7 @@ func SaveAddress(c *gin.Context) {
 	}
 
 	// 3. 调用 Service
-	if err := service.Address.SaveAddress(userID, req); err != nil {
+	if err := userService.Address.SaveAddress(userID, req); err != nil {
 		handleServiceError(c, err)
 		return
 	}
@@ -75,7 +75,7 @@ func DeleteAddress(c *gin.Context) {
 	}
 
 	// 3. 调用 Service
-	if err := service.Address.DeleteAddress(userID, req); err != nil {
+	if err := userService.Address.DeleteAddress(userID, req); err != nil {
 		handleServiceError(c, err)
 		return
 	}

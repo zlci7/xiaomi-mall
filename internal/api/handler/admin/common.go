@@ -1,4 +1,4 @@
-package handler
+package adminHandler
 
 import (
 	"xiaomi-mall/pkg/response"

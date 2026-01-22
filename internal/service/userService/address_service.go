@@ -1,4 +1,4 @@
-package service
+package userService
 
 import (
 	"xiaomi-mall/internal/api/dto"

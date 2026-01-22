@@ -10,11 +10,8 @@ func Migrate(db *gorm.DB) error {
 		&Category{},
 		&Product{},
 		&ProductSku{},
-		// &Carousel{},
 		&Order{},
 		&OrderItem{},
-		// &Cart{},
-		&SeckillActivity{},
 		&SeckillProduct{},
 		&SeckillOrder{},
 	)

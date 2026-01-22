@@ -1,9 +1,9 @@
 // handler/user_handler.go
-package handler
+package userHandler
 
 import (
 	"xiaomi-mall/internal/api/dto"
-	"xiaomi-mall/internal/service"
+	"xiaomi-mall/internal/service/userService"
 	"xiaomi-mall/pkg/response"
 	"xiaomi-mall/pkg/xerr"
 
@@ -20,7 +20,7 @@ func UserRegister(c *gin.Context) {
 	}
 
 	// 2. 调用 Service
-	resp, err := service.User.Register(req)
+	resp, err := userService.User.Register(req)
 	if err != nil {
 		// 统一错误处理
 		handleServiceError(c, err)
@@ -41,7 +41,7 @@ func UserLogin(c *gin.Context) {
 	}
 
 	// 2. 调用 Service
-	resp, err := service.User.Login(req)
+	resp, err := userService.User.Login(req)
 	if err != nil {
 		handleServiceError(c, err)
 		return

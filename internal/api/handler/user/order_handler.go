@@ -1,8 +1,8 @@
-package handler
+package userHandler
 
 import (
 	"xiaomi-mall/internal/api/dto"
-	"xiaomi-mall/internal/service"
+	"xiaomi-mall/internal/service/userService"
 	"xiaomi-mall/pkg/response"
 	"xiaomi-mall/pkg/xerr"
 
@@ -20,7 +20,7 @@ func CreateOrder(c *gin.Context) {
 		return
 	}
 	//2.调用Service
-	resp, err := service.Order.CreateOrder(userID, req)
+	resp, err := userService.Order.CreateOrder(userID, req)
 	if err != nil {
 		handleServiceError(c, err)
 		return
@@ -40,7 +40,7 @@ func PayOrder(c *gin.Context) {
 		return
 	}
 	//2.调用Service
-	resp, err := service.Order.PayOrder(userID, req)
+	resp, err := userService.Order.PayOrder(userID, req)
 	if err != nil {
 		handleServiceError(c, err)
 		return
@@ -60,7 +60,7 @@ func CancelOrder(c *gin.Context) {
 		return
 	}
 	//2.调用Service
-	err := service.Order.CancelOrder(userID, req)
+	err := userService.Order.CancelOrder(userID, req)
 	if err != nil {
 		handleServiceError(c, err)
 		return
@@ -79,7 +79,7 @@ func OrderDetail(c *gin.Context) {
 		return
 	}
 	//2.调用Service
-	resp, err := service.Order.GetOrderDetail(req)
+	resp, err := userService.Order.GetOrderDetail(req)
 	if err != nil {
 		handleServiceError(c, err)
 		return
@@ -99,7 +99,7 @@ func GetOrderList(c *gin.Context) {
 		return
 	}
 	//2.调用Service
-	resp, err := service.Order.GetOrderList(userID, req)
+	resp, err := userService.Order.GetOrderList(userID, req)
 	if err != nil {
 		handleServiceError(c, err)
 		return
@@ -119,7 +119,7 @@ func ConfirmOrder(c *gin.Context) {
 		return
 	}
 	//2.调用Service
-	err := service.Order.ConfirmOrder(userID, req)
+	err := userService.Order.ConfirmOrder(userID, req)
 	if err != nil {
 		handleServiceError(c, err)
 		return

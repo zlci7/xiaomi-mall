@@ -1,8 +1,8 @@
-package handler
+package adminHandler
 
 import (
 	"xiaomi-mall/internal/api/dto"
-	"xiaomi-mall/internal/service"
+	"xiaomi-mall/internal/service/adminService"
 	"xiaomi-mall/pkg/response"
 	"xiaomi-mall/pkg/xerr"
 
@@ -18,7 +18,7 @@ func AdminCreateProduct(c *gin.Context) {
 		return
 	}
 	//2.调用Service
-	resp, err := service.Product.CreateProduct(req)
+	resp, err := adminService.Product.CreateProduct(req)
 	if err != nil {
 		handleServiceError(c, err)
 		return
@@ -38,7 +38,7 @@ func AdminUpdateProductStock(c *gin.Context) {
 		return
 	}
 	//2.调用Service
-	err := service.Product.UpdateProductStock(req)
+	err := adminService.Product.UpdateProductStock(req)
 	if err != nil {
 		handleServiceError(c, err)
 		return
@@ -57,7 +57,7 @@ func AdminToggleProductOnSale(c *gin.Context) {
 		return
 	}
 	//2.调用Service
-	err := service.Product.UpdateProductOnSale(req)
+	err := adminService.Product.UpdateProductOnSale(req)
 	if err != nil {
 		handleServiceError(c, err)
 		return
