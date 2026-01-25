@@ -19,8 +19,8 @@ type DeleteSeckillProductReq struct {
 
 // UpdateSeckillStatusReq 手动开始/结束秒杀
 type UpdateSeckillStatusReq struct {
-	ID     uint `json:"id" binding:"required,min=1"`
-	Status int8 `json:"status" binding:"oneof=0 1 2"` // 0:未开始 1:进行中 2:已结束
+	ID     uint `uri:"id" binding:"required,min=1"`   // 路径参数
+	Status int  `form:"status" binding:"oneof=0 1 2"` // 查询参数：0:未开始 1:进行中 2:已结束（去掉 required）
 }
 
 // SeckillProductListReq 秒杀商品列表（管理端）

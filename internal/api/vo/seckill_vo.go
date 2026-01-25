@@ -9,56 +9,56 @@ type CreateSeckillProductResp struct {
 	ID uint `json:"id"`
 }
 
-// SeckillProductItemVO 秒杀商品列表项（管理端）
-type SeckillProductItemVO struct {
-	ID            uint      `json:"id"`
-	ProductID     uint      `json:"product_id"`
-	ProductName   string    `json:"product_name"` // 商品名称
-	SkuID         uint      `json:"sku_id"`
-	SkuTitle      string    `json:"sku_title"`      // SKU规格
-	ImgPath       string    `json:"img_path"`       // 商品图片
-	OriginalPrice uint      `json:"original_price"` // 原价（单位：分）
-	SeckillPrice  uint      `json:"seckill_price"`  // 秒杀价（单位：分）
-	SeckillStock  uint      `json:"seckill_stock"`  // 剩余库存
-	TotalStock    uint      `json:"total_stock"`    // 总库存
-	SoldNum       uint      `json:"sold_num"`       // 已售数量
-	StartTime     time.Time `json:"start_time"`
-	EndTime       time.Time `json:"end_time"`
-	Status        int8      `json:"status"`      // 0:未开始 1:进行中 2:已结束
-	StatusText    string    `json:"status_text"` // 状态文本
-	CreatedAt     time.Time `json:"created_at"`
-}
+// // SeckillProductItemVO 秒杀商品列表项（管理端）
+// type SeckillProductItemVO struct {
+// 	ID            uint      `json:"id"`
+// 	ProductID     uint      `json:"product_id"`
+// 	ProductName   string    `json:"product_name"` // 商品名称
+// 	SkuID         uint      `json:"sku_id"`
+// 	SkuTitle      string    `json:"sku_title"`      // SKU规格
+// 	ImgPath       string    `json:"img_path"`       // 商品图片
+// 	OriginalPrice uint      `json:"original_price"` // 原价（单位：分）
+// 	SeckillPrice  uint      `json:"seckill_price"`  // 秒杀价（单位：分）
+// 	SeckillStock  uint      `json:"seckill_stock"`  // 剩余库存
+// 	TotalStock    uint      `json:"total_stock"`    // 总库存
+// 	SoldNum       uint      `json:"sold_num"`       // 已售数量
+// 	StartTime     time.Time `json:"start_time"`
+// 	EndTime       time.Time `json:"end_time"`
+// 	Status        int8      `json:"status"`      // 0:未开始 1:进行中 2:已结束
+// 	StatusText    string    `json:"status_text"` // 状态文本
+// 	CreatedAt     time.Time `json:"created_at"`
+// }
 
-// SeckillProductListResp 秒杀商品列表响应（管理端）
-type SeckillProductListResp struct {
-	List  []SeckillProductItemVO `json:"list"`
-	Total int64                  `json:"total"`
-}
+// // SeckillProductListResp 秒杀商品列表响应（管理端）
+// type SeckillProductListResp struct {
+// 	List  []SeckillProductItemVO `json:"list"`
+// 	Total int64                  `json:"total"`
+// }
 
-// SeckillProductDetailResp 秒杀商品详情响应（管理端）
-type SeckillProductDetailResp struct {
-	ID            uint      `json:"id"`
-	ProductID     uint      `json:"product_id"`
-	ProductName   string    `json:"product_name"`
-	ProductTitle  string    `json:"product_title"` // 商品副标题
-	SkuID         uint      `json:"sku_id"`
-	SkuTitle      string    `json:"sku_title"`
-	SkuCode       string    `json:"sku_code"` // SKU编码
-	ImgPath       string    `json:"img_path"`
-	OriginalPrice uint      `json:"original_price"`
-	SeckillPrice  uint      `json:"seckill_price"`
-	SeckillStock  uint      `json:"seckill_stock"` // 剩余库存
-	TotalStock    uint      `json:"total_stock"`   // 总库存（创建时的库存）
-	SoldNum       uint      `json:"sold_num"`      // 已售数量
-	Discount      string    `json:"discount"`      // 折扣（如："7.5折"）
-	StartTime     time.Time `json:"start_time"`
-	EndTime       time.Time `json:"end_time"`
-	Status        int8      `json:"status"`
-	StatusText    string    `json:"status_text"`
-	TimeStatus    string    `json:"time_status"` // "即将开始" "进行中" "已结束"
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
-}
+// // SeckillProductDetailResp 秒杀商品详情响应（管理端）
+// type SeckillProductDetailResp struct {
+// 	ID            uint      `json:"id"`
+// 	ProductID     uint      `json:"product_id"`
+// 	ProductName   string    `json:"product_name"`
+// 	ProductTitle  string    `json:"product_title"` // 商品副标题
+// 	SkuID         uint      `json:"sku_id"`
+// 	SkuTitle      string    `json:"sku_title"`
+// 	SkuCode       string    `json:"sku_code"` // SKU编码
+// 	ImgPath       string    `json:"img_path"`
+// 	OriginalPrice uint      `json:"original_price"`
+// 	SeckillPrice  uint      `json:"seckill_price"`
+// 	SeckillStock  uint      `json:"seckill_stock"` // 剩余库存
+// 	TotalStock    uint      `json:"total_stock"`   // 总库存（创建时的库存）
+// 	SoldNum       uint      `json:"sold_num"`      // 已售数量
+// 	Discount      string    `json:"discount"`      // 折扣（如："7.5折"）
+// 	StartTime     time.Time `json:"start_time"`
+// 	EndTime       time.Time `json:"end_time"`
+// 	Status        int8      `json:"status"`
+// 	StatusText    string    `json:"status_text"`
+// 	TimeStatus    string    `json:"time_status"` // "即将开始" "进行中" "已结束"
+// 	CreatedAt     time.Time `json:"created_at"`
+// 	UpdatedAt     time.Time `json:"updated_at"`
+// }
 
 // ==================== 用户端：秒杀商品展示 ====================
 
