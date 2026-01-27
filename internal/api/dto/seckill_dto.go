@@ -35,6 +35,11 @@ type SeckillProductDetailReq struct {
 	ID uint `uri:"id" binding:"required,min=1"`
 }
 
+// PreheatSeckillProductReq 预热秒杀商品到 Redis
+type PreheatSeckillProductReq struct {
+	ID uint `uri:"id" binding:"required,min=1"` // 秒杀商品 ID
+}
+
 // ==================== 用户端：秒杀下单 ====================
 
 // CreateSeckillOrderReq 用户秒杀下单
