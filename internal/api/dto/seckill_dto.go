@@ -48,8 +48,15 @@ type CreateSeckillOrderReq struct {
 	AddressID        uint `json:"address_id" binding:"required,min=1"` // 收货地址
 }
 
-// UserSeckillListReq 用户端秒杀商品列表（正在进行的）
+// ==================== 用户端：秒杀查询 ====================
+
+// UserSeckillListReq 用户端秒杀商品列表
 type UserSeckillListReq struct {
 	Page     int `form:"page" binding:"omitempty,min=1"`
 	PageSize int `form:"page_size" binding:"omitempty,min=1,max=100"`
+}
+
+// UserSeckillDetailReq 用户端秒杀商品详情
+type UserSeckillDetailReq struct {
+	ID uint `uri:"id" binding:"required,min=1"` // 秒杀商品 ID
 }
