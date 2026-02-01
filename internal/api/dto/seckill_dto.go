@@ -45,7 +45,6 @@ type PreheatSeckillProductReq struct {
 // CreateSeckillOrderReq 用户秒杀下单
 type CreateSeckillOrderReq struct {
 	SeckillProductID uint `json:"seckill_product_id" binding:"required,min=1"`
-	AddressID        uint `json:"address_id" binding:"required,min=1"` // 收货地址
 }
 
 // ==================== 用户端：秒杀查询 ====================

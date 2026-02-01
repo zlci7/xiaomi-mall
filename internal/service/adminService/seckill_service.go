@@ -63,9 +63,39 @@ func (s *SeckillService) DeleteSeckillProduct(req dto.DeleteSeckillProductReq) e
 	return dao.Seckill.DeleteSeckillProduct(req.ID)
 }
 
-// 手动开启/结束秒杀
+// 手动开启/结束秒杀（同步更新 MySQL 和 Redis）
 func (s *SeckillService) UpdateSeckillStatus(req dto.UpdateSeckillStatusReq) error {
-	return dao.Seckill.UpdateSeckillStatus(req.ID, req.Status)
+	ctx := context.Background()
+
+	// 1. 查询秒杀商品信息（需要时间信息）
+	seckillProduct, err := dao.Seckill.GetSeckillProductByID(req.ID)
+	if err != nil {
+		return xerr.NewErrMsg("秒杀商品不存在")
+	}
+
+	// 2. 更新 MySQL 状态
+	if err := dao.Seckill.UpdateSeckillStatus(req.ID, req.Status); err != nil {
+		return err
+	}
+
+	// 3. 同步更新 Redis
+	switch req.Status {
+	case 1: // 开启秒杀
+		// 添加到活动列表
+		dao.Seckill.AddToActiveList(ctx, req.ID, seckillProduct.StartTime, seckillProduct.EndTime)
+
+	case 2: // 结束秒杀
+		// 从活动列表移除
+		dao.Seckill.RemoveFromActiveList(ctx, req.ID)
+		// 清理缓存数据
+		dao.Seckill.DeleteSeckillCache(ctx, req.ID)
+
+	case 0: // 恢复未开始状态
+		// 从活动列表移除
+		dao.Seckill.RemoveFromActiveList(ctx, req.ID)
+	}
+
+	return nil
 }
 
 // 预热秒杀商品到 Redis

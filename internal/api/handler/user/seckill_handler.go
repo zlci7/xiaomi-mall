@@ -45,3 +45,22 @@ func SeckillDetail(c *gin.Context) {
 	//3.返回响应
 	response.Success(c, resp)
 }
+
+// 秒杀商品下单查询
+func CreateSeckillOrder(c *gin.Context) {
+	userID := c.GetUint("user_id")
+	//1.绑定请求参数（URI 路径参数）
+	var req dto.CreateSeckillOrderReq
+	if err := c.ShouldBindJSON(&req); err != nil { // ⬅️ 改为 ShouldBindQuery
+		response.Error(c, xerr.REUQEST_PARAM_ERROR, "")
+		return
+	}
+	//2.调用Service
+	resp, err := userService.Seckill.CreateSeckillOrder(userID, req)
+	if err != nil {
+		handleServiceError(c, err)
+		return
+	}
+	//3.返回响应
+	response.Success(c, resp)
+}

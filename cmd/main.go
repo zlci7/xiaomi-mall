@@ -10,8 +10,8 @@ import (
 	"xiaomi-mall/config"
 	"xiaomi-mall/internal/api/router"
 	"xiaomi-mall/internal/dao"
+	"xiaomi-mall/internal/pkg/consumer"
 	"xiaomi-mall/pkg/idgen"
-	"xiaomi-mall/pkg/queue"
 )
 
 func main() {
@@ -33,13 +33,18 @@ func main() {
 	}
 	fmt.Println("✅ 雪花算法初始化成功！")
 
-	// 5. 启动延迟队列扫描器
-	queue.StartDelayQueueScanner()
+	// 5. 启动秒杀订单消费者（异步写入MySQL）
+	go consumer.ConsumeSeckillOrders()
+	fmt.Println("✅ 秒杀订单消费者已启动")
 
-	// 6. 初始化 Gin 框架
+	// 6. 启动订单超时扫描器（统一处理普通订单和秒杀订单）
+	consumer.StartSeckillOrderTimeoutScanner()
+	fmt.Println("✅ 订单超时扫描器已启动")
+
+	// 7. 初始化 Gin 框架
 	r := router.InitRouter()
 
-	// 7. 启动服务（非阻塞）
+	// 8. 启动服务（非阻塞）
 	addr := config.AppConfig.Server.Port
 	fmt.Printf("🚀 服务启动成功，监听地址：%s\n", addr)
 	fmt.Println("📌 本地访问: http://localhost" + addr + "/ping")
@@ -55,7 +60,7 @@ func main() {
 	fmt.Println("JWT Secret Key:", config.AppConfig.Jwt.AccessSecret)
 	fmt.Println("JWT Expire:", config.AppConfig.Jwt.AccessExpire)
 
-	// 8. 关闭服务
+	// 9. 优雅关闭
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit

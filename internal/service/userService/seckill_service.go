@@ -5,37 +5,24 @@ package userService
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"xiaomi-mall/internal/api/dto"
 	"xiaomi-mall/internal/api/vo"
 	"xiaomi-mall/internal/dao"
+	"xiaomi-mall/internal/model"
+	"xiaomi-mall/internal/pkg/types"
+	"xiaomi-mall/pkg/idgen"
 	"xiaomi-mall/pkg/xerr"
+
+	"github.com/go-redis/redis/v8"
+	"gorm.io/gorm"
 )
 
 type SeckillService struct{}
 
 var Seckill = new(SeckillService)
-
-// Redis 缓存数据结构（与预热时一致）
-type SeckillProductCache struct {
-	SeckillID     uint   `json:"seckill_id"`
-	ProductID     uint   `json:"product_id"`
-	ProductName   string `json:"product_name"`
-	ProductTitle  string `json:"title"`
-	ProductInfo   string `json:"info"`
-	ProductImg    string `json:"img"`
-	CategoryID    uint   `json:"category_id"`
-	SkuID         uint   `json:"sku_id"`
-	SkuTitle      string `json:"sku_title"`
-	SkuCode       string `json:"sku_code"`
-	OriginalPrice int64  `json:"original_price"`
-	SeckillPrice  uint   `json:"seckill_price"`
-	SeckillStock  uint   `json:"seckill_stock"` // 总库存
-	TotalStock    uint   `json:"total_stock"`
-	StartTime     int64  `json:"start_time"`
-	EndTime       int64  `json:"end_time"`
-}
 
 // ==================== 列表查询 ====================
 
@@ -87,7 +74,7 @@ func (s *SeckillService) GetSeckillProductList(req dto.UserSeckillListReq) (*vo.
 			continue
 		}
 
-		var cache SeckillProductCache
+		var cache types.SeckillProductCache
 		if err := json.Unmarshal(productData, &cache); err != nil {
 			continue
 		}
@@ -154,7 +141,7 @@ func (s *SeckillService) GetSeckillProductDetail(userID uint, req dto.UserSeckil
 		return nil, xerr.NewErrMsg("秒杀商品不存在或已结束")
 	}
 
-	var cache SeckillProductCache
+	var cache types.SeckillProductCache
 	if err := json.Unmarshal(productData, &cache); err != nil {
 		return nil, xerr.NewErrMsg("数据解析失败")
 	}
@@ -222,4 +209,120 @@ func (s *SeckillService) GetSeckillProductDetail(userID uint, req dto.UserSeckil
 	}
 
 	return detailVO, nil
+}
+
+// ==================== 秒杀下单 ====================
+
+func (s *SeckillService) CreateSeckillOrder(userID uint, req dto.CreateSeckillOrderReq) (*vo.CreateSeckillOrderResp, error) {
+	ctx := context.Background()
+	//1.1 检查商品是否在redis
+	cacheData, err := dao.Seckill.GetSeckillProductCacheByID(ctx, req.SeckillProductID)
+	if err != nil {
+		return nil, xerr.NewErrMsg("秒杀商品不存在")
+	}
+
+	//1.2 检查当前是否在秒杀活动时间内
+	var productCache types.SeckillProductCache
+	json.Unmarshal(cacheData, &productCache)
+	now := time.Now().Unix()
+	if now < productCache.StartTime || now >= productCache.EndTime {
+		return nil, xerr.NewErrMsg("秒杀活动未开始或已结束")
+	}
+
+	//1.3 检查用户是否已购买（Redis，快速检查）
+	hasBought, err := dao.Seckill.CheckUserPurchased(ctx, req.SeckillProductID, userID)
+	if err != nil {
+		return nil, xerr.NewErrMsg("系统错误，请稍后重试")
+	}
+	if hasBought {
+		return nil, xerr.NewErrMsg("请勿重复下单")
+	}
+
+	//2.1 执行lua脚本
+	//生成订单号
+	orderNum := idgen.GenStringID()
+	result, err := dao.Seckill.CreateSeckillOrderAtomic(ctx, userID, req.SeckillProductID, orderNum)
+	if err != nil {
+		return nil, xerr.NewErrMsg("系统错误，请稍后重试")
+	}
+	if result == -1 {
+		return nil, xerr.NewErrMsg("请勿重复下单")
+	}
+	if result == -2 {
+		return nil, xerr.NewErrMsg("库存不足")
+	}
+	if result == -3 {
+		return nil, xerr.NewErrMsg("秒杀活动未开始或已结束")
+	}
+
+	//2.2 将订单加入延迟队列（30分钟后超时）
+	expireTime := time.Now().Add(30 * time.Minute)
+	dao.Rdb.ZAdd(ctx, "order:delay:queue", &redis.Z{
+		Score:  float64(expireTime.Unix()),
+		Member: orderNum,
+	})
+
+	//2.3 返回秒杀成功（异步写入MySQL已在Lua脚本中投递到队列）
+	return &vo.CreateSeckillOrderResp{
+		OrderNum:    orderNum,
+		TotalAmount: int64(productCache.SeckillPrice),
+		ExpireTime:  expireTime,
+		PayUrl:      "",
+	}, nil
+}
+
+// ==================== 秒杀订单关闭（超时取消）====================
+
+// CloseSeckillOrder 关闭秒杀订单（回滚 Redis 库存和用户标记）
+func (s *SeckillService) CloseSeckillOrder(orderNum string) error {
+	ctx := context.Background()
+
+	// 1. 查询主订单信息
+	var order model.Order
+	if err := dao.DB.Where("order_num = ?", orderNum).First(&order).Error; err != nil {
+		return err
+	}
+
+	// 2. 检查订单状态（只关闭未支付的订单）
+	if order.PayStatus != 0 {
+		return nil // 已支付，跳过
+	}
+
+	// 3. 查询秒杀订单信息
+	var seckillOrder model.SeckillOrder
+	if err := dao.DB.Where("order_num = ?", orderNum).First(&seckillOrder).Error; err != nil {
+		return err
+	}
+
+	// 4. 事务：更新数据库订单状态
+	err := dao.DB.Transaction(func(tx *gorm.DB) error {
+		// 4.1 更新主订单状态
+		if err := tx.Model(&order).Updates(map[string]interface{}{
+			"order_status": 4, // 4=已取消
+			"cancel_time":  time.Now(),
+		}).Error; err != nil {
+			return err
+		}
+
+		// 4.2 更新秒杀订单状态
+		if err := tx.Model(&seckillOrder).Update("status", 2).Error; err != nil { // 2=已取消
+			return err
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return err
+	}
+
+	// 5. 回滚 Redis 库存（关键！）
+	stockKey := fmt.Sprintf("seckill:stock:%d", seckillOrder.SeckillProductID)
+	dao.Rdb.Incr(ctx, stockKey)
+
+	// 6. 删除用户购买标记（关键！）
+	userKey := fmt.Sprintf("seckill:user:%d:%d", seckillOrder.SeckillProductID, order.UserID)
+	dao.Rdb.Del(ctx, userKey)
+
+	return nil
 }

@@ -14,6 +14,6 @@ func SeckillRoutes(rg *gin.RouterGroup) {
 		seckillGroup.GET("/list", userHandler.SeckillList)  // 活动列表
 		seckillGroup.GET("/:id", userHandler.SeckillDetail) // 活动详情
 		// // 秒杀下单（需要登录）
-		// seckillGroup.POST("/order/create", handler.CreateSeckillOrder) // 秒杀下单
+		seckillGroup.POST("/order", userHandler.CreateSeckillOrder) // 秒杀下单
 	}
 }

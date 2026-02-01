@@ -281,3 +281,103 @@ func (d *SeckillDao) CheckUserPurchased(ctx context.Context, seckillID, userID u
 	}
 	return exists > 0, nil
 }
+
+// 原子性地创建秒杀订单
+func (d *SeckillDao) CreateSeckillOrderAtomic(ctx context.Context, userID, seckillID uint, orderNum string) (int, error) {
+	script := `
+		-- 原子性创建秒杀订单
+		local stock_key = KEYS[1]
+		local user_key = KEYS[2]
+		local order_queue_key = KEYS[3]
+
+		local user_id = ARGV[1]
+		local seckill_id = ARGV[2]
+		local order_num = ARGV[3]
+		local ttl = ARGV[4]
+
+		-- 1. 检查用户是否购买
+		if redis.call('EXISTS', user_key) == 1 then
+			return -1
+		end
+
+		-- 2. 检查库存
+		if redis.call('EXISTS', stock_key) == 0 then
+			return -3
+		end
+
+		local stock = tonumber(redis.call('GET', stock_key))
+		if not stock or stock <= 0 then
+			return -2
+		end
+
+		-- 3. 扣减库存
+		redis.call('DECR', stock_key)
+
+		-- 4. 设置用户购买标记
+		redis.call('SETEX', user_key, ttl, order_num)
+
+		-- 5. 将订单信息加入到队列（异步处理）
+		local time_result = redis.call('TIME')
+		local timestamp = tonumber(time_result[1])
+		local order_data = {
+			user_id = user_id,
+			seckill_id = seckill_id,
+			order_num = order_num,
+			timestamp = timestamp,
+			retry_count = 0,
+			first_try_time = timestamp,
+			last_try_time = timestamp,
+		}
+		redis.call('LPUSH', order_queue_key, cjson.encode(order_data))
+		return 1
+    `
+
+	stockKey := fmt.Sprintf("seckill:stock:%d", seckillID)
+	userKey := fmt.Sprintf("seckill:user:%d:%d", seckillID, userID)
+	orderQueueKey := "seckill:order:queue"
+	result, err := Rdb.Eval(ctx, script,
+		[]string{stockKey, userKey, orderQueueKey},
+		userID,
+		seckillID,
+		orderNum,
+		86400,
+	).Int()
+	if err != nil {
+		return 0, err
+	}
+	return result, nil
+}
+
+// ==================== Redis 活动列表管理 ====================
+
+// AddToActiveList 添加秒杀商品到活动列表
+func (d *SeckillDao) AddToActiveList(ctx context.Context, seckillID uint, startTime, endTime time.Time) error {
+	startList := "seckill:active:start"
+	endList := "seckill:active:end"
+
+	pipe := Rdb.Pipeline()
+	pipe.ZAdd(ctx, startList, &redis.Z{
+		Score:  float64(startTime.Unix()),
+		Member: seckillID,
+	})
+	pipe.ZAdd(ctx, endList, &redis.Z{
+		Score:  float64(endTime.Unix()),
+		Member: seckillID,
+	})
+
+	_, err := pipe.Exec(ctx)
+	return err
+}
+
+// RemoveFromActiveList 从活动列表中移除秒杀商品
+func (d *SeckillDao) RemoveFromActiveList(ctx context.Context, seckillID uint) error {
+	startList := "seckill:active:start"
+	endList := "seckill:active:end"
+
+	pipe := Rdb.Pipeline()
+	pipe.ZRem(ctx, startList, seckillID)
+	pipe.ZRem(ctx, endList, seckillID)
+
+	_, err := pipe.Exec(ctx)
+	return err
+}
