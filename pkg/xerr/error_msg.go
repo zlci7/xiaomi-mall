@@ -33,6 +33,9 @@ func init() {
 	message[PRODUCT_STOCK_INVALID] = "库存值无效，必须大于等于0"
 	message[PRODUCT_NOT_FOUND] = "商品不存在"
 
+	// --- 限流模块错误 400xxx ---
+	message[RATE_LIMIT_ERROR] = "请求过于频繁，请稍后重试"
+
 }
 
 func MapErrMsg(errcode uint32) string {

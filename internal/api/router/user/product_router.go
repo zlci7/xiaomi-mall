@@ -12,14 +12,17 @@ func ProductRoutes(rg *gin.RouterGroup) {
 	productGroup := rg.Group("/products")
 	productGroup.Use(middleware.JWTAuth()) // JWT 认证中间件
 	{
-		// ✅ 查询商品列表（GET + Query Params）
-		productGroup.GET("", userHandler.ProductList) // GET /products?page=1&category_id=10
+		// ✅ 查询商品列表（GET + Query Params + IP限流防爬虫）
+		// productGroup.GET("", middleware.IPRateLimit(), userHandler.ProductList)
+		productGroup.GET("", userHandler.ProductList)
 
-		// ✅ 查询商品详情（GET + 路径参数）
-		productGroup.GET("/:product_id", userHandler.ProductDetail) // GET /products/123
+		// ✅ 查询商品详情（GET + 路径参数 + IP限流）
+		// productGroup.GET("/:product_id", middleware.IPRateLimit(), userHandler.ProductDetail)
+		productGroup.GET("/:product_id", userHandler.ProductDetail)
 
-		// ✅ 查询 SKU 详情（GET + 路径参数）
-		productGroup.GET("/skus/:sku_id", userHandler.SkuDetail) // GET /products/skus/456
+		// ✅ 查询 SKU 详情（GET + 路径参数 + IP限流）
+		// productGroup.GET("/skus/:sku_id", middleware.IPRateLimit(), userHandler.SkuDetail)
+		productGroup.GET("/skus/:sku_id", userHandler.SkuDetail)
 	}
 
 	// ✅ 查询分类列表（独立路由组）

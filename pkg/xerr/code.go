@@ -34,6 +34,9 @@ const (
 	PRODUCT_STOCK_INVALID = 300005 // 库存值无效
 	PRODUCT_NOT_FOUND     = 300006 // 商品不存在
 
+	// 限流模块错误码 (400xxx)
+	RATE_LIMIT_ERROR = 400001 // 请求过于频繁
+
 )
 
 // CodeError 自定义错误结构体

@@ -10,6 +10,7 @@ import (
 	"xiaomi-mall/config"
 	"xiaomi-mall/internal/api/router"
 	"xiaomi-mall/internal/dao"
+	"xiaomi-mall/internal/middleware"
 	"xiaomi-mall/internal/pkg/bloom"
 	"xiaomi-mall/internal/pkg/consumer"
 	"xiaomi-mall/pkg/idgen"
@@ -41,6 +42,10 @@ func main() {
 	if err := bloom.InitSeckillBloom(); err != nil {
 		log.Printf("⚠️  初始化秒杀布隆过滤器失败: %v", err)
 	}
+
+	// 4.6 初始化限流器
+	middleware.InitRateLimiters()
+	fmt.Println("✅ 限流器初始化成功！")
 
 	// 5. 启动秒杀订单消费者（异步写入MySQL）
 	go consumer.ConsumeSeckillOrders()

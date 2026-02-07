@@ -11,9 +11,16 @@ func SeckillRoutes(rg *gin.RouterGroup) {
 	seckillGroup := rg.Group("/seckill")
 	seckillGroup.Use(middleware.JWTAuth()) // JWT 认证
 	{
-		seckillGroup.GET("/list", userHandler.SeckillList)  // 活动列表
-		seckillGroup.GET("/:id", userHandler.SeckillDetail) // 活动详情
-		// // 秒杀下单（需要登录）
-		seckillGroup.POST("/order", userHandler.CreateSeckillOrder) // 秒杀下单
+		// 秒杀列表和详情（IP 限流：1秒100次）
+		// seckillGroup.GET("/list", middleware.IPRateLimit(), userHandler.SeckillList)
+		seckillGroup.GET("/list", userHandler.SeckillList)
+		// seckillGroup.GET("/:id", middleware.IPRateLimit(), userHandler.SeckillDetail)
+		seckillGroup.GET("/:id", userHandler.SeckillDetail)
+
+		// 秒杀下单（严格限流：单用户1秒1次）
+		seckillGroup.POST("/order",
+			// middleware.SeckillRateLimit(), // 秒杀专用限流
+			userHandler.CreateSeckillOrder,
+		)
 	}
 }
