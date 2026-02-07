@@ -8,6 +8,7 @@ import (
 	"xiaomi-mall/internal/api/vo"
 	"xiaomi-mall/internal/dao"
 	"xiaomi-mall/internal/model"
+	"xiaomi-mall/internal/pkg/bloom"
 	parseTime "xiaomi-mall/pkg/parsetime"
 	"xiaomi-mall/pkg/xerr"
 )
@@ -53,6 +54,10 @@ func (s *SeckillService) CreateSeckillProduct(req dto.CreateSeckillProductReq) (
 	if err != nil {
 		return nil, xerr.NewErrMsg("创建秒杀商品失败")
 	}
+
+	// 添加到布隆过滤器
+	bloom.AddSeckillToBloom(seckill.ID)
+
 	return &vo.CreateSeckillProductResp{
 		ID: seckill.ID,
 	}, nil

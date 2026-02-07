@@ -13,6 +13,7 @@ import (
 	"xiaomi-mall/internal/dao"
 	"xiaomi-mall/internal/model"
 	"xiaomi-mall/internal/pkg/types"
+	pkgBloom "xiaomi-mall/pkg/bloom"
 	"xiaomi-mall/pkg/idgen"
 	"xiaomi-mall/pkg/xerr"
 
@@ -134,6 +135,14 @@ func (s *SeckillService) GetSeckillProductList(req dto.UserSeckillListReq) (*vo.
 
 func (s *SeckillService) GetSeckillProductDetail(userID uint, req dto.UserSeckillDetailReq) (*vo.UserSeckillDetailVO, error) {
 	ctx := context.Background()
+
+	// 0. 布隆过滤器前置校验（防止缓存穿透）
+	if pkgBloom.SeckillBloom != nil {
+		if !pkgBloom.SeckillBloom.TestUint(req.ID) {
+			// 秒杀商品一定不存在
+			return nil, xerr.NewErrMsg("秒杀商品不存在或已结束")
+		}
+	}
 
 	// 1. 从 Redis 获取商品详情
 	productData, err := dao.Seckill.GetSeckillProductCacheByID(ctx, req.ID)

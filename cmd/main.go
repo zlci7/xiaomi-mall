@@ -10,6 +10,7 @@ import (
 	"xiaomi-mall/config"
 	"xiaomi-mall/internal/api/router"
 	"xiaomi-mall/internal/dao"
+	"xiaomi-mall/internal/pkg/bloom"
 	"xiaomi-mall/internal/pkg/consumer"
 	"xiaomi-mall/pkg/idgen"
 )
@@ -32,6 +33,14 @@ func main() {
 		log.Fatalf("❌ 初始化雪花算法失败: %v", err)
 	}
 	fmt.Println("✅ 雪花算法初始化成功！")
+
+	// 4.5 初始化布隆过滤器（防止缓存穿透）
+	if err := bloom.InitProductBloom(); err != nil {
+		log.Printf("⚠️  初始化商品布隆过滤器失败: %v", err)
+	}
+	if err := bloom.InitSeckillBloom(); err != nil {
+		log.Printf("⚠️  初始化秒杀布隆过滤器失败: %v", err)
+	}
 
 	// 5. 启动秒杀订单消费者（异步写入MySQL）
 	go consumer.ConsumeSeckillOrders()

@@ -6,6 +6,7 @@ import (
 	"xiaomi-mall/internal/api/vo"
 	"xiaomi-mall/internal/dao"
 	"xiaomi-mall/internal/model"
+	"xiaomi-mall/internal/pkg/bloom"
 	"xiaomi-mall/pkg/xerr"
 
 	"gorm.io/gorm"
@@ -72,6 +73,9 @@ func (s *ProductService) CreateProduct(req dto.CreateProductReq) (*vo.CreateProd
 	if err != nil {
 		return nil, xerr.NewErrCode(xerr.PRODUCT_CREATE_ERROR)
 	}
+
+	// 3.5 添加到布隆过滤器
+	bloom.AddProductToBloom(product.ID)
 
 	// 4️⃣ 构造响应 VO
 	resp := &vo.CreateProductResp{

@@ -9,6 +9,7 @@ import (
 	"xiaomi-mall/internal/api/vo"
 	"xiaomi-mall/internal/dao"
 	"xiaomi-mall/internal/model"
+	pkgBloom "xiaomi-mall/pkg/bloom"
 	"xiaomi-mall/pkg/xerr"
 )
 
@@ -83,6 +84,15 @@ func (s *ProductService) ProductList(req dto.ProductListReq) (*vo.ProductListRes
 
 // 商品详情查询
 func (s *ProductService) ProductDetail(req dto.ProductDetailReq) (*vo.ProductDetailResp, error) {
+	// ========== 0️⃣ 布隆过滤器前置校验（防止缓存穿透）==========
+	if pkgBloom.ProductBloom != nil {
+		if !pkgBloom.ProductBloom.TestUint(req.ProductID) {
+			// 布隆过滤器判断：商品一定不存在（100% 准确）
+			println("🛡️  布隆过滤器拦截：商品不存在")
+			return nil, xerr.NewErrCode(xerr.PRODUCT_NOT_FOUND)
+		}
+	}
+
 	// ========== 1️⃣ 尝试从缓存读取 ==========
 	cacheKey := fmt.Sprintf("product:detail:%d", req.ProductID)
 	cacheData, err := dao.Rdb.Get(ctx, cacheKey).Result()
